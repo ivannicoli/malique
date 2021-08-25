@@ -47,17 +47,17 @@
       })
     });
 
-    $.getJSON('https://filedn.com/ldw1E1uSCLd0FdnYL33tWsf/malique/dados.json', function (data) {
+    $.getJSON('https://raw.githubusercontent.com/inmjava/malique/master/dados.json', function (data) {
       
       loadon();
       dados = data;
 
-      for (let i = 1; i < data.values.length;) {       
+      for (let i = 1; i < data.values.length; i++) {
         let element = {}
-
+        
         element.persiana = data.values[i][0];
-        element.persiana = data.values[i][1];
-        element.persiana = data.values[i][2];
+        element.valoratual = data.values[i][1];
+        element.valorantigo = data.values[i][2];   
 
         console.log(element)
         sheet.push(element)
