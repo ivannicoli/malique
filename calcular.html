@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Calculadora Malique</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <style>
+    .loader {
+      border: 2px solid #f3f3f3;
+      /* Light grey */
+      border-top: 2px solid #555555;
+      /* Blue */
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+
+  <script>
+    var dados;
+    var sheet = [];
+    var selectedOne;
+    var formatter;
+
+    $(document).ready(function(){
+      formatter = new Intl.NumberFormat([], {
+        style: 'currency',
+        currency: 'BRL'
+      })
+    });
+
+    $.getJSON('https://filedn.com/ldw1E1uSCLd0FdnYL33tWsf/malique/dados.json', function (data) {
+      
+      loadon();
+      dados = data;
+
+      for (let i = 1; i < data.values.length;) {       
+        let element = {}
+
+        element.persiana = data.values[i][0];
+        element.persiana = data.values[i][1];
+        element.persiana = data.values[i][2];
+
+        console.log(element)
+        sheet.push(element)
+      }
+
+      sheet.sort(compare);
+
+      sheet.forEach((e, i) => {
+        var x = document.getElementById("mySelect");
+        var option = document.createElement("option");
+        option.text = e.persiana;
+        option.value = i;
+        x.add(option);
+      });
+
+      loadoff();
+
+      selectMe();
+    });
+
+    function loadon() {
+      $(".loader").show()
+      $("#myForm").hide()
+
+    }
+
+    function loadoff() {
+      $(".loader").hide()
+      $("#myForm").show()
+
+    }
+
+    function selectMe() {
+      var x = document.getElementById("mySelect");
+      selectedOne = sheet[x.value]
+      $("#valorM2").val(selectedOne.valoratual.replace(/,/g, '.'))
+      calcular()
+      return;
+
+    }
+
+    function getValorM2() {
+      return selectedOne.valoratual;
+    }
+
+    function calcular() {
+      let alt = $("#altura").val();
+      let lag = $("#largura").val();
+      let valorm2 = $("#valorM2").val();
+
+      console.log(alt)
+      console.log(lag)
+      console.log(valorm2)
+      let vv = formatter.format(alt*lag*valorm2)
+      let vvp = formatter.format(alt*lag*valorm2*1.1)
+      $("#valorvista").val(vv)
+      $("#valorparcelar").val(vvp)
+    }
+
+    function compare(a,b) {
+      if (a.persiana < b.persiana)
+        return -1;
+      if (a.persiana > b.persiana)
+        return 1;
+      return 0;
+    }
+
+    
+  </script>
+</head>
+
+<body>
+  <br>
+  <div class="loader" style="display: none;"></div>
+  <div id="myForm" class="container" style="display: none;">
+    
+
+    <form>
+      <div class="form-group">
+        <label for="exampleFormControlSelect1">Persiana</label>
+        <select class="form-control" id="mySelect" onchange="selectMe()">
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Valor m2</label>
+        <div class="input-group mb-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">R$</div>
+          </div>
+          <input type="number" class="form-control" id="valorM2" oninput="calcular()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Largura</label>
+        <input type="number" class="form-control" id="largura" oninput="calcular()">
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Altura</label>
+        <input type="number" class="form-control" id="altura" oninput="calcular()">
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Valor à Vista</label>
+        <input class="form-control" id="valorvista" readonly>
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Valor Parcelado</label>
+        <input class="form-control" id="valorparcelar" readonly>
+      </div>
+      <!-- <button type="button" class="btn btn-dark" onclick="calcular()">Calcular</button> -->
+    </form>
+
+  </div>
+
+</body>
+
+</html>
